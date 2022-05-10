@@ -1,4 +1,4 @@
-# Code Review
+# Code Review 漫谈
 
 本文档遵守：
 
@@ -24,24 +24,25 @@
 这会造成以下不良影响：
 
 - 代码会在开发者中传播、传承，糟糕的代码会增加各个环节的成本。
-- example 和 demo 中的代码片段会在使用者中传播，错误的示范如同病毒。
+- example 和 demo 中的代码片段会在使用者中传播，所以，错误和劣化的代码也会像病毒一样传播。
 
 **请用一贯的高标准、严要求完成所有代码。**
 
-### 【话题】一次 review 的量
+### 【话题】一次 review 的工作量
 
-显而易见，过多改动是阻碍有效、快速 review 的最大敌人。
+过多改动是阻碍有效、快速 review 的最大敌人。
 
-我遇到的“大型 code  review”无外乎有两个结果：
+我遇到的“大型 code review”无外乎有两个结果：
 
-* 拖很久完成 review，但是 reviewer 因为受不了持久战做了妥协，没能守住底线。
-* 拖很久不了了之直接 merge。
-无论是哪种结果，都不是我们希望的。
+* 拖很久完成 review，但是 reviewer 因为受不了持久战做出妥协，没守住底线。
+* 拖很久不了了之，没有 review 完而直接 merge。
+
+无论是哪种结果，都不是我们希望看到的。
 
 **最佳实践：**
 
-- **一次 review，改动行数在 500 行以内，最多不超过 1000 行。**
-- **一次 review 尽量只包含一个 commit。**
+- **一次 review 的改动在 500 行以内，最多不超过 1000 行。**
+- **一次 review 包含尽可能少的 commit。**
     - **如果功能/需求复杂，可以按照合理的粒度拆分成多个 commit，但不要包含太多改动，不包含不相关的改动。**
 
 ### 【话题】有意义的 diff
@@ -74,10 +75,9 @@
     - **频繁更新的二进制文件，请使用 git lfs。**
     - **考虑拆分二进制文件到另一个仓库，甚至不是代码库。**
 
-Diffable（suitable for processing by a diff program in order to show differences）是有意义 diff 的充分必要条件。
-发起 code review 前请三思你的改动是否 diffable。
+发起 code review 前请三思你的改动是否 diffable（suitable for processing by a diff program in order to show differences）。
 
-### 【话题】优雅的埋“坑”
+### 【话题】如何埋“坑”
 
 “对那些临时的, 短期的解决方案, 或已经够好但仍不完美的代码使用 TODO 注释. ”
 
@@ -88,7 +88,8 @@ Diffable（suitable for processing by a diff program in order to show difference
 ```
 
 每个 TODO 注释都是一个“坑”。
-我们允许“坑”的存在，但决不允许“暗坑”的存在，也不要让 TODO 没人认领，变成 NEVERDO。
+我们允许“坑”的存在，但不允许“暗坑”的存在。
+也不要让 TODO 注释没人认领，变成 NEVERDO。
 
 ## 可读性
 
@@ -126,6 +127,16 @@ advertisement -> ad
 initialize -> init
 implement -> impl
 personalization -> p13n
+```
+
+当前上下文中不会引起歧义的缩写，也是好的缩写：
+
+```c++
+double mean = 0.0;
+double var = 0.0;
+// compute mean
+// compute var
+double stddev = sqrt(var);
 ```
 
 #### 【案例】函数命名 1
