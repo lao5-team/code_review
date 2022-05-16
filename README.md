@@ -222,3 +222,140 @@ void ToggleMetrics(bool enabled);
 ```
 
 v4 和 v5 都是好的函数声明。
+
+## 【扩展性 & 可读性】函数设计案例 2
+
+```Foo``` 处理 ```in```，返回处理后的结果。
+如果 ```compressed``` 为 ```true```，```in``` 是用 Snappy 压缩的。
+
+```c++
+std::string Foo(const std::string& in, bool compressed = false);
+```
+
+有一天我们发现 LZ4 比 Snappy 压缩比更高、性能更好，然而 ```Foo``` 已经无法扩展了。
+
+```Bar``` 比 ```Foo``` 有更好的扩展性：不但支持好了现状，而且可以扩展到未来。
+
+```c++
+enum COMPRESSION_TYPE {
+  COMPRESSION_TYPE_NONE = 0,
+  COMPRESSION_TYPE_SNAPPY = 1,
+  COMPRESSION_TYPE_LZ4 = 2,
+};
+std::string Bar(const std::string& in,
+                int compression_type = COMPRESSION_TYPE_NONE);
+```
+
+我们再看看它们的调用代码，可读性一目了然：
+
+```c++
+out = Foo(in, false);
+out = Foo(in, true);
+out = Bar(in, COMPRESSION_TYPE_NONE);
+out = Bar(in, COMPRESSION_TYPE_SNAPPY);
+out = Bar(in, COMPRESSION_TYPE_LZ4);
+```
+
+**最佳实践：**
+
+- **设计函数时，考虑用 ```int/enum``` 取代 ```bool``` 做参数，它们有更好的扩展性和可读性。**
+
+## 【扩展性 & 可读性】函数设计案例 3
+
+```Init``` 根据若干参数初始化某模块。
+
+```c++
+// v1
+bool Init(const std::string& model_dir,
+          int session_pool_max_size = 96,
+          int intra_op_parallelism_threads = 1,
+          int inter_op_parallelism_threads = -1,
+          bool enable_warmup = true,
+          bool enable_session_run_timeout = true);
+```
+
+该模块迭代到第二版，引入 CUDA 和 OpenCL 能力，添加对应参数 ```enable_cuda``` 和 ```enable_opencl```。
+
+如此迭代下去，该模块还将引入多少参数呢？
+
+```c++
+// v2
+bool Init(const std::string& model_dir,
+          int session_pool_max_size = 96,
+          int intra_op_parallelism_threads = 1,
+          int inter_op_parallelism_threads = -1,
+          bool enable_warmup = true,
+          bool enable_session_run_timeout = true,
+          bool enable_cuda = false,
+          bool enable_opencl = false);
+```
+
+第二版可以这样改进：通过 string map 传递所有参数，彻底解决参数扩展性问题。
+
+```c++
+// v2 改进
+template <typename T>
+bool GetOption(const std::unordered_map<std::string, std::string>& options,
+               const std::string& name, T* option);
+template <typename T>
+bool GetOption(const std::unordered_map<std::string, std::string>& options,
+               const std::string& name, T* option, const T& default_option);
+
+bool Init(const std::unordered_map<std::string, std::string>& options) {
+  std::string model_dir;
+  int session_pool_max_size;
+  int intra_op_parallelism_threads;
+  int inter_op_parallelism_threads;
+  bool enable_warmup;
+  bool enable_session_run_timeout;
+  bool enable_cuda;
+  bool enable_opencl;
+  if (!GetOption(options, "model_dir", &model_dir) ||
+      !GetOption(options, "session_pool_max_size", &session_pool_max_size,
+                 96) ||
+      !GetOption(options, "intra_op_parallelism_threads",
+                 &intra_op_parallelism_threads, 1) ||
+      !GetOption(options, "inter_op_parallelism_threads",
+                 &inter_op_parallelism_threads, -1) ||
+      !GetOption(options, "enable_warmup", &enable_warmup, true) ||
+      !GetOption(options, "enable_session_run_timeout",
+                 &enable_session_run_timeout, true) ||
+      !GetOption(options, "enable_cuda", &enable_cuda, false) ||
+      !GetOption(options, "enable_opencl", &enable_opencl, false)) {
+    return false;
+  }
+
+  // ...
+  return true;
+}
+```
+
+我们再看看 ```Init``` 的调用代码，可读性一目了然：
+
+```c++
+// v1
+bool ok = Init("mandatory_model_dir", 96, 1, -1, true, true);
+```
+
+```c++
+// v2
+bool ok = Init("mandatory_model_dir", 96, 1, -1, true, true, false, true);
+```
+
+```c++
+// v2 改进
+std::unordered_map<std::string, std::string> options;
+options["model_dir"] = "mandatory_model_dir";
+options["session_pool_max_size"] = "96";
+options["intra_op_parallelism_threads"] = "1";
+options["inter_op_parallelism_threads"] = "-1";
+options["enable_warmup"] = "true";
+options["enable_session_run_timeout"] = "true";
+options["enable_cuda"] = "false";
+options["enable_opencl"] = "false";
+bool ok = Init(options);
+```
+
+**最佳实践：**
+
+- **设计函数时，尽量避免过多参数，考虑用特殊方式处理大量参数的传递。**
