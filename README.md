@@ -52,6 +52,40 @@
 
 - **请用一贯的高标准、严要求完成所有代码。**
 
+## 【通用】commit history
+
+本小节以 git 为例。
+
+> **场景一**
+>
+> 某同事的所有 commit message 都是“update”。
+>
+> reviewer 不关注 commit message。
+>
+> 该项目 commit history 中存在大量连续的“update”。
+>
+> **场景二**
+>
+> 某同事发起 code review，针对 reviewer 的问题，每改动一次就创建一个带有相同 message 的 commit。
+>
+> 该项目 commit history 中存在大量连续的有相同 message 的 commit。
+>
+> **场景三**
+>
+> 某项目的开发模式是“创建分支 - 在分支开发 - 合并到 master”。
+>
+> 该项目成员从不 rebase master，开发完成后用 “merge” 的方式合并到 master。
+>
+> 该项目 commit history 中存在大量分叉和“merge commit”。
+
+**最佳实践：**
+
+- **请培养意识：commit history 和代码同等重要，commit history 也是给人看的，commit history 有时候还需要回溯。**
+- **请写好 commit message。**
+- **请维护好 commit tree。**
+    - **尽量保持 commit tree 是线性的。**
+    - **优先用“rebase and merge”或“squash and merge”的方式合并分支。**
+
 ## 【通用】有意义的 diff
 
 无意义的 diff 是阻碍有效、快速 review 的另一大敌人。
