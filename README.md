@@ -116,6 +116,62 @@
 
 TODO 注释一定要带上挖“坑”人，还可以带上填“坑”时间，让 TODO 不会变成 NEVERDO。
 
+## 【通用 & 一致性】专有名词
+
+任何项目所在领域和项目所采用的技术领域中，存在大量专有名词。
+
+Doc work（文档、issue、代码注释等）应该特别注意这些专有名词。
+
+**最佳实践：**
+
+- **专有名词有官方写法的，请在 doc work 中使用官方写法。**
+- **专有名词没有统一官方写法的，请在 doc work 中保持一致。**
+- **约定俗成的专有名词，请在 doc work 中使用更通用的写法并保持一致。**
+- **以上只针对 doc work。**
+
+一些专有名词的官方写法：
+
+```
+CentOS
+deepx
+GitHub
+GitLab
+HDFS
+iOS
+LZ4
+macOS
+Redis
+Snappy
+TensorFlow
+Visual Studio Code
+Xcode
+```
+
+这些专有名词的不严谨写法：
+
+```
+centos
+DeepX
+github
+Github
+gitlab
+Gitlab
+hdfs
+Hdfs
+ios
+lz4
+Lz4
+macos
+MacOS
+redis
+snappy
+tensorflow
+Tensorflow
+visual studio code
+xcode
+XCode
+```
+
 ## 【可读性】缩写
 
 **最佳实践：**
