@@ -206,6 +206,73 @@ xcode
 XCode
 ```
 
+## 【一致性】概述
+
+好的**一致性**和**可读性**是优秀代码最重要的两个要素，是 code review 应该重点关注的。
+
+我没有资格给一致性下定义。
+
+我将列举一系列缺乏一致性的案例，欢迎对号入座。
+
+> **案例 1**
+>
+> 写中文文档时，全角、半角标点混着用。
+>
+> **案例 2**
+>
+> 命名不一致。
+>
+> 表达数量时，一会用 ```size```，一会用 ```count```，一会用 ```number```。
+>
+> 表达长度时，一会用 ```size```，一会用 ```length```。
+>
+> 表达计算时，一会用 ```compute```，一会用 ```calculate```。
+>
+> **案例 3**
+>
+> 命名不对称。
+>
+> ```c++
+> void set_attribute(const std::string& attribute) {
+>   // 应该 set `attribute_`，实际 set `biz_attribute_`。
+>   biz_attribute_ = attribute;
+> }
+> ```
+>
+> ```c++
+> // begin vs end
+> // start vs stop
+> auto start = std::chrono::steady_clock::now();
+> // ...
+> auto end = std::chrono::steady_clock::now();
+> auto duration = end - start;
+> ```
+>
+> ```python
+> # 没错，你不是一个人，Python 标准库也不一致。
+> # begin vs end
+> # start vs stop
+> str.startswith
+> str.endswith
+> ```
+>
+> ```c++
+> // in vs out
+> // input vs output
+> void Foo(const std::string& in, std::string* output);
+> ```
+>
+> ```c++
+> struct BenchmarkStat {
+>   // succeed vs fail
+>   // success vs failure
+>   double success = 0
+>   double fail = 0
+> };
+> ```
+>
+> **未完待续**
+
 ## 【可读性】缩写
 
 **最佳实践：**
