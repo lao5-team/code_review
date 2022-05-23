@@ -9,6 +9,24 @@
 
 本文档和 [谷歌代码审核指南](https://jimmysong.io/eng-practices/docs/review) 穿插阅读效果更佳。
 
+## 【通用】一次 review 的工作量
+
+过多改动是阻碍有效、快速 review 的最大敌人。
+
+我遇到的“大型 code review”无外乎有两个结果：
+
+* 拖很久完成 review，但是 reviewer 因为受不了持久战做出妥协。
+* 拖很久不了了之，没有 review 完而直接提交。
+
+无论是哪种结果，都不是我们希望看到的。
+
+**最佳实践：**
+
+- **一次 review 的改动最好在 200 行以内，最多不超过 1000 行。**
+- **一次 review 包含尽可能少的 commit。**
+    - **如果功能/需求复杂，可以按照合理的粒度拆分成多个 commit。**
+- **一次 review 不要包含不相关的 commit。**
+
 ## 【通用】部分代码完成度低、要求低
 
 > **场景一**
@@ -28,28 +46,45 @@
 这会造成以下不良影响：
 
 - 代码会在开发者中传播、传承，糟糕的代码会增加各个环节的成本。
-- example 和 demo 中的代码片段会在使用者中传播，所以，错误和劣化的代码也会像病毒一样传播。
+- example 和 demo 中的代码片段会在使用者中传播，错误和劣化的代码也会像病毒一样传播。
 
 **最佳实践：**
 
 - **请用一贯的高标准、严要求完成所有代码。**
 
-## 【通用】一次 review 的工作量
+## 【通用】commit history
 
-过多改动是阻碍有效、快速 review 的最大敌人。
+本小节以 git 为例。
 
-我遇到的“大型 code review”无外乎有两个结果：
-
-* 拖很久完成 review，但是 reviewer 因为受不了持久战做出妥协，没守住底线。
-* 拖很久不了了之，没有 review 完而直接 merge。
-
-无论是哪种结果，都不是我们希望看到的。
+> **场景一**
+>
+> 某同事的所有 commit message 都是“update”。
+>
+> reviewer 不关注 commit message。
+>
+> 该项目 commit history 中存在大量连续的“update”。
+>
+> **场景二**
+>
+> 某同事发起 code review，针对 reviewer 的问题，每改动一次就创建一个带有相同 message 的 commit。
+>
+> 该项目 commit history 中存在大量连续的有相同 message 的 commit。
+>
+> **场景三**
+>
+> 某项目的开发模式是“创建分支 - 在分支开发 - 合并到 master”。
+>
+> 该项目成员从不 rebase master，开发完成后用 “merge” 的方式合并到 master。
+>
+> 该项目 commit history 中存在大量分叉和“merge commit”。
 
 **最佳实践：**
 
-- **一次 review 的改动在 500 行以内，最多不超过 1000 行。**
-- **一次 review 包含尽可能少的 commit。**
-    - **如果功能/需求复杂，可以按照合理的粒度拆分成多个 commit，但不要包含太多改动，不包含不相关的改动。**
+- **请培养意识：commit history 和代码同等重要，commit history 也是给人看的，commit history 有时候还需要回溯。**
+- **请写好 commit message。**
+- **请维护好 commit tree。**
+    - **尽量保持 commit tree 是线性的。**
+    - **优先用“rebase and merge”或“squash and merge”的方式合并分支。**
 
 ## 【通用】有意义的 diff
 
@@ -59,51 +94,127 @@
 
 > **场景一**
 >
-> 某项目代码格式不统一，某天决定统一格式，每个人配置代码格式化工具。
-> 某同事修改了几十行代码，保存时代码格式化工具对代码格式化，最终产生上百行 diff。
+> 某项目代码格式不统一，某天项目负责人决定统一格式风格，要求项目成员配置代码格式化工具。
+>
+> 某同事修改了几十行代码，保存时代码格式化工具对代码格式化，产生上百行 diff。
 >
 >**场景二**
 >
-> 某同事将 proto 文件和对应的 .pb.cc .pb.h 文件提交到 git。添加一个 proto 字段，最终产生几十行 diff。
+> 某项目将 ```.proto``` 文件和生成的 ```.pb.cc``` 和 ```.pb.h``` 文件提交到代码库。
+>
+> 某同事给该 ```.proto``` 文件添加一个字段，产生几十行 diff。
 >
 >**场景三**
 >
-> 某同事将二进制测试数据提交到 git。对它们的修改发起 code review。
+> 某项目将二进制测试数据提交到代码库。
+>
+> 某同事更新二进制测试数据。
+>
+>**场景四**
+>
+> 某同事重构了某模块，重构前后的代码差异巨大。
 
-前两个场景中，有意义的 diff 隐藏于大量无意义 diff。第三个场景中，二进制文件不方便 diff。
+前两个场景中，有意义 diff 藏于大量无意义 diff 中。
+
+第三个场景中，二进制文件不方便 diff。
+
+第四个场景中，改动有意义，但 diff 无意义。
+
+无意义的 diff 就是不 diffable（suitable for processing by a diff program in order to show differences）的 diff。
 
 **最佳实践：**
 
-- **保持项目统一的格式风格。**
-    - **如果项目修改格式风格，统一修改并直接提交。**
-- **不提交生成的代码（例如 protobuf、thrift、bison、flex 生成的代码）。**
-- **尽可能不提交二进制文件。**
-    - **频繁更新的二进制文件，请使用 git lfs。**
-    - **考虑拆分二进制文件到另一个仓库，甚至不是代码库。**
+- **工作中，会因为种种原因产生不 diffable 的改动。**
+    - **不合理的，请让它们变得合理。**
+    - **合理的，特事特办。**
 
-发起 code review 前请三思你的改动是否 diffable（suitable for processing by a diff program in order to show differences）。
+针对上面场景：
 
-## 【通用】如何埋“坑”
+- 场景一：从工具层面保持项目统一的格式风格。如果要修改格式风格，统一修改并直接提交。
+- 场景二：不提交生成的 protobuf 代码。
+- 场景三：提交生成“二进制测试数据”的代码，而不是“二进制测试数据”本身。
+- 场景四：不关注 diff，review 重构后的代码。
+
+## 【通用】如何挖“坑”
 
 “对那些临时的, 短期的解决方案, 或已经够好但仍不完美的代码使用 TODO 注释. ”
 
-要注意的是，TODO 注释的格式是（一定要带上埋“坑”人的 id）：
+每个 TODO 注释都是一个“坑”。我们允许“坑”的存在，但不允许“暗坑”的存在。
+
+要注意的是，TODO 注释的格式是：
 
 ```c++
-// TODO(kimi): what to do in future.
+// TODO(who): to do what.
+// TODO(who): when to do what.
 ```
 
-每个 TODO 注释都是一个“坑”。
-我们允许“坑”的存在，但不允许“暗坑”的存在。
-也不要让 TODO 注释没人认领，变成 NEVERDO。
+TODO 注释一定要带上挖“坑”人，还可以带上填“坑”时间，让 TODO 不会变成 NEVERDO。
+
+## 【通用 & 一致性】专有名词
+
+任何项目所在领域和项目所采用的技术领域中，存在大量专有名词。
+
+Doc work（文档、issue、代码注释等）应该特别注意这些专有名词。
+
+**最佳实践：**
+
+- **专有名词有官方写法的，请在 doc work 中使用官方写法。**
+- **专有名词没有统一官方写法的，请在 doc work 中保持一致。**
+- **约定俗成的专有名词，请在 doc work 中使用更通用的写法并保持一致。**
+- **以上只针对 doc work。**
+
+一些专有名词的官方写法：
+
+```
+CentOS
+deepx
+GitHub
+GitLab
+HDFS
+iOS
+LZ4
+macOS
+Redis
+Snappy
+TensorFlow
+Visual Studio Code
+Xcode
+```
+
+这些专有名词的不严谨写法：
+
+```
+centos
+DeepX
+github
+Github
+gitlab
+Gitlab
+hdfs
+Hdfs
+ios
+lz4
+Lz4
+macos
+MacOS
+redis
+snappy
+tensorflow
+Tensorflow
+visual studio code
+xcode
+XCode
+```
 
 ## 【可读性】缩写
 
 **最佳实践：**
 
 - **不使用奇怪的缩写。**
-- **不使用不约定俗成的缩写。**
+- **使用约定俗成的缩写。**
 - **尽量不缩写短单词。**
+- **当前上下文中不会引起歧义的缩写，是好缩写。**
+- **考虑在某范围内创造缩写，但请三思如何缩写，因为它们将影响深远。**
 
 坏的缩写：
 
@@ -124,12 +235,14 @@ manager -> mgr
 
 ```
 advertisement -> ad
-initialize -> init
+document -> doc
 implement -> impl
+initialize -> init
 personalization -> p13n
+reference -> ref
 ```
 
-当前上下文中不会引起歧义的缩写，也是好的缩写：
+下面代码片段的 ```var``` 和 ```stddev``` 不会有人误解：
 
 ```c++
 double mean = 0.0;
@@ -138,11 +251,18 @@ double var = 0.0;
 double stddev = sqrt(var);
 ```
 
-这里的 ```var``` 不会有人认为是 ```variable``` 的缩写。
+下面代码片段的 ```K``` 和 ```V``` 不会有人误解：
+
+```c++
+template <typename K, typename V>
+class Map;
+```
 
 ## 【可读性】日志案例 1
 
 关于日志，我遇到的一个典型问题是：失败后的错误日志揣测失败原因。
+
+v1 打开文件失败时，打印错误日志“文件不存在”：
 
 ```c++
 // v1
@@ -153,15 +273,15 @@ if (fd == -1) {
 }
 ```
 
-v1 打开文件失败时，打印错误日志“文件不存在”。
-
-事实上，导致打开文件失败的原因有很多，举几种情况：
+事实上，打开文件失败的原因有很多，常见的有：
 
 1. 文件不存在。
-2. 打开文件，但是打开了目录。
+2. ```file``` 是一个目录。
 3. 没有读权限（读模式）。
 4. 没有写权限（写模式）。
-5. 打开了过多文件，即打开文件数超过了 ```ulimit -n```。
+5. 打开了过多文件，即打开文件数超过 ```ulimit -n```。
+
+v2 是更好的做法：
 
 ```c++
 // v2
@@ -173,42 +293,44 @@ if (fd == -1) {
 }
 ```
 
-v2 是正确的做法。
-
 **最佳实践：**
 
 - **失败后的错误日志日志应该打印失败事件本身，不揣测失败原因。**
-- **如果可以获取失败原因，请一起打印出来。**
+- **如果有更多上下文，请打印出来。**
 
 ## 【可读性】函数设计案例 1
 
 某基础库要添加一个“开启/关闭 metrics 采集”的功能，考虑函数设计。
 
+v1 和 v2，```Set``` 和 ```Enable``` 都是动词，“动名动”、“动动名”的词性不适合做函数名。
+```enable``` 是动词，不适合做函数参数名。
+
 ```c++
 // v1
 void SetMetricsEnable(bool enable);
+```
+
+```c++
 // v2
 void SetEnableMetrics(bool enable);
 ```
 
-```Set``` 和 ```Enable``` 都是动词，“动名动”、“动动名”的词性不适合做函数名。
-
-```enable``` 是动词，不适合做函数参数名。
+v1 改进，不太好。
+```SetMetricsEnabled``` 更像一个 setter 函数。
 
 ```c++
 // v1 改进
 void SetMetricsEnabled(bool enabled);
 ```
 
-v1 改进，可以接受，但是不好。
-```SetMetricsEnabled``` 更像一个 setter 函数，但实际上这是一个功能型函数。
+v3，```enbaled``` 为 ```false``` 时，是开启还是关闭？
 
 ```c++
 // v3
 void EnableMetrics(bool enabled);
 ```
 
-v3，enbaled 为 false 时，是开启还是关闭？
+v4 和 v5 都是好的函数声明。
 
 ```c++
 // v4
@@ -221,8 +343,6 @@ void DisableMetrics();
 void ToggleMetrics(bool enabled);
 ```
 
-v4 和 v5 都是好的函数声明。
-
 ## 【扩展性 & 可读性】函数设计案例 2
 
 ```Foo``` 处理 ```in```，返回处理后的结果。
@@ -234,7 +354,7 @@ std::string Foo(const std::string& in, bool compressed = false);
 
 有一天我们发现 LZ4 比 Snappy 压缩比更高、性能更好，然而 ```Foo``` 已经无法扩展了。
 
-```Bar``` 比 ```Foo``` 有更好的扩展性：不但支持好了现状，而且可以扩展到未来。
+```Bar``` 比 ```Foo``` 有更好的扩展性，它不但支持好了现状，而且可以扩展到未来。
 
 ```c++
 enum COMPRESSION_TYPE {
