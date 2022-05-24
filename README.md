@@ -480,38 +480,47 @@ bool ok = Init(options);
 
 - **设计函数时，尽量避免过多参数，考虑用特殊方式处理大量参数的传递。**
 
-## 【扩展性 & 可读性】优化逻辑分支
+## 【扩展性 & 可读性】用查表的方式代替 if...else 判断
+
 假设有如下的需求:
 
-如果由2个开关分别按照下面的规则控制4盏灯：
-- 开关1关闭，开关2关闭，则1号灯亮
-- 开关1开启，开关2关闭，则2号灯亮
-- 开关1关闭，开关2开启，则3号灯亮
-- 开关1开启，开关2开启，则4号灯亮
+如果由 2 个开关分别按照下面的规则控制 4 盏灯：
+
+- 开关 1 关闭，开关 2 关闭，则 1 号灯亮
+- 开关 1 开启，开关 2 关闭，则 2 号灯亮
+- 开关 1 关闭，开关 2 开启，则 3 号灯亮
+- 开关 1 开启，开关 2 开启，则 4 号灯亮
   
 可能通常都会按照下面的方式实现：
+
 ```java
-    if (switch2.close) {
-        if (switch1.close) {
-            turnOn(light1);
-        } else {
-            turnOn(light2);
-        }
+if (switch2.close) {
+    if (switch1.close) {
+        turnOn(light1);
     } else {
-        if (switch1.close) {
-            turnOn(light3);
-        } else {
-            turnOn(light4);
-        }
+        turnOn(light2);
     }
+} else {
+    if (switch1.close) {
+        turnOn(light3);
+    } else {
+        turnOn(light4);
+    }
+}
 ```  
+
 阅读这段代码的时候，就像在看地图时，依次经过3个岔路口才能知道所有情况，最大的问题是不够直观。
-此时可以考虑用数据代替这些逻辑组合，用查找表的方式来代替这种嵌套的if...else判断
+
+并且如果增加到 3 个开关，就不得不写 3 层 if...else 判断，代码可读性就非常差了。
+
+此时可以考虑用数据代替这些逻辑组合，用查表的方式来代替这种嵌套的 if...else 判断
+
 ``` java
-    Light[] lights = new Ligth[]{light1, light2, light3, light4};
-    int i1 = switch2.close ? 0 : 1;
-    int i2 = switch1.close ? 0 : 1;
-    int index = (i1 << 1) + i2;
-    turnOn(lights[index]);
+Light[] lights = new Ligth[]{light1, light2, light3, light4};
+int i1 = switch2.close ? 0 : 1;
+int i2 = switch1.close ? 0 : 1;
+int index = (i1 << 1) + i2;
+turnOn(lights[index]);
 ```
-这种方式还有一个好处，后面增加新的规则，不用修改逻辑，只需要修改数据。
+
+这种方式把问题转化为开关和数组下标是如何对应的，这样做的好处是：即使后面增加新的规则，也不用增加新的业务逻辑，而只需要增加数据。
