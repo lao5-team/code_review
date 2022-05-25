@@ -550,3 +550,51 @@ bool ok = Init(options);
 **最佳实践：**
 
 - **设计函数时，尽量避免过多参数，考虑用特殊方式处理大量参数的传递。**
+
+## 【扩展性 & 可读性】分支优化案例 1
+
+考虑需求“用 2 个开关控制 4 盏灯”：
+
+- 开关 1 关闭，开关 2 关闭，则打开 1 号灯。
+- 开关 1 开启，开关 2 关闭，则打开 2 号灯。
+- 开关 1 关闭，开关 2 开启，则打开 3 号灯。
+- 开关 1 开启，开关 2 开启，则打开 4 号灯。
+
+v1 可读性稍差，但逻辑清晰，可以接受。
+
+如果需求变成“用 3 个开关控制 8 盏灯”或者更多，还套用 v1 的代码结构，可读性将非常差，也容易出错。
+
+```java
+// v1
+if (switch2.close) {
+  if (switch1.close) {
+    turnOn(light1);
+  } else {
+    turnOn(light2);
+  }
+} else {
+  if (switch1.close) {
+    turnOn(light3);
+  } else {
+    turnOn(light4);
+  }
+}
+```
+
+用”查表“的思想优化 v1，得到 v2。
+
+``` java
+// v2
+Light[] lights = new Ligth[]{light1, light2, light3, light4};
+int index = (switch2.close ? 0 : 2) + (switch1.close ? 0 : 1);
+turnOn(lights[index]);
+```
+
+v2 可以扩展到“用 3 个开关控制 8 盏灯”的需求。
+
+``` java
+// v2 扩展
+Light[] lights = new Ligth[]{light1, light2, light3, light4, light5, light6, light7, light8};
+int index = (switch3.close ? 0 : 4) + (switch2.close ? 0 : 2) + (switch1.close ? 0 : 1);
+turnOn(lights[index]);
+```
