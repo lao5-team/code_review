@@ -11,37 +11,48 @@
 
 ## 目录
 
-* [【通用】一次 review 的工作量](#通用一次-review-的工作量)
-* [【通用】部分代码完成度低、要求低](#通用部分代码完成度低要求低)
-* [【通用】commit history](#通用commit-history)
-* [【通用】有意义的 diff](#通用有意义的-diff)
-* [【通用】如何挖“坑”](#通用如何挖坑)
-* [【通用】专有名词](#通用专有名词)
-* [【一致性】概述](#一致性概述)
-* [【可读性】缩写](#可读性缩写)
-* [【可读性】日志案例 1](#可读性日志案例-1)
-* [【可读性】函数设计案例 1](#可读性函数设计案例-1)
-* [【扩展性 & 可读性】函数设计案例 2](#扩展性--可读性函数设计案例-2)
-* [【扩展性 & 可读性】函数设计案例 3](#扩展性--可读性函数设计案例-3)
-* [【扩展性 & 可读性】分支优化案例 1](#扩展性--可读性分支优化案例-1)
+- [Code Review 漫谈](#code-review-漫谈)
+  - [目录](#目录)
+  - [【通用】一次 code review 的工作量](#通用一次-code-review-的工作量)
+  - [【通用】部分代码要求低](#通用部分代码要求低)
+  - [【通用】commit history](#通用commit-history)
+  - [【通用】有意义的 diff](#通用有意义的-diff)
+  - [【通用】TODO 注释](#通用todo-注释)
+  - [【通用】专有名词](#通用专有名词)
+  - [【通用】将循环体内的“不变量”移到循环体外](#通用将循环体内的不变量移到循环体外)
+  - [【通用】重复代码片段](#通用重复代码片段)
+  - [【算法】随机算法案例 1](#算法随机算法案例-1)
+  - [【一致性】不一致案例](#一致性不一致案例)
+  - [【可读性】缩写](#可读性缩写)
+  - [【可读性】时间命名案例](#可读性时间命名案例)
+  - [【可读性】日志案例 1](#可读性日志案例-1)
+  - [【可读性】日志案例 2](#可读性日志案例-2)
+  - [【可读性】日志案例 3](#可读性日志案例-3)
+  - [【可读性】函数注释案例 1](#可读性函数注释案例-1)
+  - [【可读性】函数注释案例 2](#可读性函数注释案例-2)
+  - [【可读性】函数注释案例 3](#可读性函数注释案例-3)
+  - [【可读性】函数命名案例 1](#可读性函数命名案例-1)
+  - [【可读性】函数命名案例 2](#可读性函数命名案例-2)
+  - [【扩展性 & 可读性】函数设计案例 1](#扩展性--可读性函数设计案例-1)
+  - [【扩展性 & 可读性】函数设计案例 2](#扩展性--可读性函数设计案例-2)
+  - [【扩展性 & 可读性】分支优化案例 1](#扩展性--可读性分支优化案例-1)
 
-## 【通用】一次 review 的工作量
+## 【通用】一次 code review 的工作量
 
 过多改动是阻碍有效、快速 review 的最大敌人。
 
-我遇到的“大型 code review”很可能有两种我们都不希望看到的结果：
+我遇到的“大型 code review”通常有两种我们都不希望看到的结果：
 
-* 拖很久完成 review，但是 reviewer 因为受不了持久战做出妥协。
-* 拖很久不了了之，没有 review 完而直接提交。
+- 拖很久完成 code review，但是 reviewer 受不了持久战而做出妥协。
+- 拖很久不了了之，没有完成 code review 而直接提交。
 
 **最佳实践：**
 
-- **一次 review 的改动最好在 200 行以内，最多不超过 1000 行。**
-- **一次 review 包含尽可能少的 commit。**
-    - **如果功能/需求复杂，可以按照合理的粒度拆分成多个 commit。**
-- **一次 review 不要包含不相关的 commit。**
+- **一次 code review 的改动控制在 200 行以内，不超过 1000 行。**
+- **一次 code review 的 commit 控制在 5 个以内，不超过 10 个。**
+- **一次 code review 不包含不相关的 commit。**
 
-## 【通用】部分代码完成度低、要求低
+## 【通用】部分代码要求低
 
 > **案例 1**
 >
@@ -54,17 +65,22 @@
 > **案例 3**
 >
 > “这是例子，不需要考虑性能和安全性了吧。”
+>
+> **案例 4**
+>
+> “这是离线代码，性能差一点无所谓。”
 
-我经常遇到一种情况是：降低对 example、demo、test、benchmark 的要求。
+我经常遇到一种情况是：降低对测试、例子、离线代码的要求。
 
 这会造成以下不良影响：
 
 - 代码会在开发者中传播、传承，糟糕的代码会增加各个环节的成本。
-- example 和 demo 中的代码片段会在使用者中传播，错误和劣化的代码也会像病毒一样传播。
+- 例子中的代码片段会在使用者中传播，错误和劣化的代码也会像病毒一样传播。
+- 离线任务变慢，资源消耗变多。
 
 **最佳实践：**
 
-- **请用一贯的高标准、严要求完成所有代码。**
+- **请用高标准、严要求写所有代码。**
 
 ## 【通用】commit history
 
@@ -76,29 +92,29 @@
 >
 > reviewer 不关注 commit message。
 >
-> 该项目 commit history 中存在大量连续的“update”。
->
 > **案例 2**
 >
 > 某同事发起 code review，针对 reviewer 的问题，每改动一次就创建一个带有相同 message 的 commit。
->
-> 该项目 commit history 中存在大量连续的有相同 message 的 commit。
 >
 > **案例 3**
 >
 > 某项目的开发模式是“创建分支 - 在分支开发 - 合并到 master”。
 >
 > 该项目成员从不 rebase master，开发完成后用 “merge” 的方式合并到 master。
->
-> 该项目 commit history 中存在大量分叉和“merge commit”。
+
+问题：
+
+- 案例 1：commit history 中存在大量连续的“update” commit。
+- 案例 2：commit history 中存在大量连续的有相同 message 的 commit。
+- 案例 3：commit history 中存在大量分叉和 merge commit。
 
 **最佳实践：**
 
 - **请培养意识：commit history 和代码同等重要，commit history 也是给人看的，commit history 有时候还需要回溯。**
-- **请写好 commit message。**
+- **请用高标准、严要求写 commit message。**
 - **请维护好 commit tree。**
-    - **尽量保持 commit tree 是线性的。**
-    - **优先用“rebase and merge”或“squash and merge”的方式合并分支。**
+  - **保持 commit tree 是线性的。**
+  - **用“rebase and merge”或“squash and merge”合并分支。**
 
 ## 【通用】有意义的 diff
 
@@ -128,28 +144,22 @@
 >
 > 某同事重构了某模块，重构前后的代码差异巨大。
 
-前两个案例中，有意义 diff 藏于大量无意义 diff 中。
+问题：
 
-第三个案例中，二进制文件不方便 diff。
+- 案例 1 & 2：少量有意义 diff 藏于大量无意义 diff 中。
+- 案例 3：二进制文件不适合 diff。
+- 案例 4：diff 无意义。
 
-第四个案例中，改动有意义，但 diff 无意义。
+有意义的 diff 就是 diffable（suitable for processing by a diff program in order to show differences）的 diff。
 
-无意义的 diff 就是不 diffable（suitable for processing by a diff program in order to show differences）的 diff。
-
-**最佳实践：**
-
-- **工作中，会因为种种原因产生不 diffable 的改动。**
-    - **不合理的，请让它们变得合理。**
-    - **合理的，特事特办。**
-
-针对上面案例：
+可以这样改进：
 
 - 案例 1：从工具层面保持项目统一的格式风格。如果要修改格式风格，统一修改并直接提交。
 - 案例 2：不提交生成的 protobuf 代码。
 - 案例 3：提交生成“二进制测试数据”的代码，而不是“二进制测试数据”本身。
 - 案例 4：不关注 diff，review 重构后的代码。
 
-## 【通用】如何挖“坑”
+## 【通用】TODO 注释
 
 “对那些临时的, 短期的解决方案, 或已经够好但仍不完美的代码使用 TODO 注释. ”
 
@@ -158,7 +168,7 @@
 要注意的是，TODO 注释的格式是：
 
 ```c++
-// TODO(who): to do what.
+// TODO(who) to do what.
 // TODO(who): when to do what.
 ```
 
@@ -166,9 +176,9 @@ TODO 注释一定要带上挖“坑”人，还可以带上填“坑”时间，
 
 ## 【通用】专有名词
 
-任何项目所在领域和项目所采用的技术领域中，存在大量专有名词。
+任何项目的业务领域和技术领域中，都存在大量专有名词。
 
-Doc work（文档、issue、代码注释等）中应该特别注意这些专有名词。
+Doc work（文档、issue、代码注释等）要特别注意专有名词。
 
 **最佳实践：**
 
@@ -178,6 +188,7 @@ Doc work（文档、issue、代码注释等）中应该特别注意这些专有�
 
 一些专有名词的官方写法：
 
+<!-- markdownlint-disable -->
 ```
 CentOS
 deepx
@@ -193,9 +204,11 @@ TensorFlow
 Visual Studio Code
 Xcode
 ```
+<!-- markdownlint-restore -->
 
-以上专有名词的不严谨写法：
+以上专有名词的错误写法：
 
+<!-- markdownlint-disable -->
 ```
 centos
 DeepX
@@ -218,47 +231,139 @@ visual studio code
 xcode
 XCode
 ```
+<!-- markdownlint-restore -->
 
-## 【一致性】概述
+## 【通用】将循环体内的“不变量”移到循环体外
 
-好的**一致性**和**可读性**是优秀代码最重要的两个要素，是 code review 应该重点关注的。
+如题。
 
-我没有资格给一致性下定义。
+## 【通用】重复代码片段
 
-我将列举一系列缺乏一致性的案例，欢迎对号入座。
+消除重复代码片段。
+
+考虑用代码生成大致雷同的代码。
+
+## 【算法】随机算法案例 1
+
+随机从数组 x 中选出 n 个数字，选出数字的顺序不同算不同的结果。
+
+令 m 为数组 x 的大小，理想情况下，这个随机算法要求：
+
+- 当 $m \gt n$ 时，有 $\frac{m!}{(m-n)!}$ 种结果，每种结果的概率是 $\frac{(m-n)!}{m!}$。
+- 当 $m \le n$ 时，有 $m!$ 种结果，每种结果的概率是 $\frac{1}{m!}$。
+
+```c++
+// 反例
+// 伪码
+定义数组 y;
+if (x.empty()) {
+  return y;
+}
+int m = x.size();
+int j = random_uniform_int(0, m - 1);
+for (int i = j; i < m; ++i) {
+  if (y.size() == n) {
+    break;
+  }
+  y.add(x[i]);
+}
+for (int i = j; i >= 0; --i) {
+  if (y.size() == n) {
+    break;
+  }
+  y.add(x[i]);
+}
+return y;
+```
+
+问题：
+
+- 达不到理想情况。
+
+可以这样改进：
+
+```c++
+// 伪码
+// Fisher-Yates 洗牌算法。
+int m = x.size();
+for (int i = 0; i < m - 1; ++i) {
+  int j = random_uniform_int(i, m - 1);
+  if (i != j) {
+    交换 x[i] 和 x[j];
+  }
+}
+if (n > m) {
+  n = m;
+}
+return x[0:n];
+```
+
+分析：
+
+<!-- markdownlint-disable -->
+- 当 $m \gt n$ 时：
+  - $x_0$ 在位置 0 的概率是 $\frac{1}{m}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1 的概率是 $\frac{1}{m} * \frac{1}{m-1}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，$x_2$ 在位置 2 的概率是 $\frac{1}{m} * \frac{1}{m-1} * \frac{1}{m-2}$。
+  - ...
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，...，$x_{n-2}$ 在位置 n-2 的概率是 $\frac{1}{m} * \frac{1}{m-1} * \frac{1}{m-2} * \cdots * \frac{1}{m-n+2}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，...，$x_{n-1}$ 在位置 n-1 的概率是 $\frac{1}{m} * \frac{1}{m-1} * \frac{1}{m-2} * \cdots * \frac{1}{m-n+2} * \frac{1}{m-n+1} = \frac{(m-n)!}{m!}$。
+  - 因为分析过程中 $x_i$ 不失一般性，所以任意序列的概率是 $\frac{(m-n)!}{m!}$。
+- 当 $m \le n$ 时：
+  - $x_0$ 在位置 0 的概率是 $\frac{1}{m}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1 的概率是 $\frac{1}{m} * \frac{1}{m-1}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，$x_2$ 在位置 2 的概率是 $\frac{1}{m} * \frac{1}{m-1} * \frac{1}{m-2}$。
+  - ...
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，...，$x_{m-2}$ 在位置 m-2 的概率是 $\frac{1}{m} * \frac{1}{m-1} * \frac{1}{m-2} * \cdots * \frac{1}{2}$。
+  - $x_0$ 在位置 0，$x_1$ 在位置 1，...，$x_{m-1}$ 在位置 m-1 的概率是 $\frac{1}{m!}$。
+  - 因为分析过程中 $x_i$ 不失一般性，所以任意序列的概率是 $\frac{1}{m!}$。
+<!-- markdownlint-restore -->
+
+**最佳实践：**
+
+- **理论分析：保证理论分布符合预期。**
+- **测试：保证统计分布和理论分布近似。**
+- **简单、高效。**
+- **无状态、可重入、无锁。**
+
+## 【一致性】不一致案例
+
+好的**一致性**和**可读性**是优秀代码最重要的两个要素，是 code review 的重点关注对象。
+
+下面将列举不一致的案例，欢迎对号入座。
 
 > **案例 1**
 >
-> 写中文文档时，一会用全角标点，一会用半角标点。
+> 全角标点 vs 半角标点
 >
-> 文件换行符一会用 ```\n```，一会用 ```\r\n```。
+> ```\n``` 换行符 vs ```\r\n``` 换行符
 >
-> 非 ASCII 文件一会用 UTF-8 编码，一会用 GBK 编码。
+> UTF-8 编码 vs GBK 编码
 >
-> 一会用 tab 缩进，一会用 2 个空格缩进，一会用 4 个空格缩进。
->
-> 代码格式化，但是文档中的代码没有格式化。
+> 2 空格缩进 vs 4 空格缩进 vs Tab 缩进
 >
 > **案例 2：命名不一致**
 >
-> 表达数量时，一会用 ```size```，一会用 ```count```，一会用 ```number```。
+> ```size``` vs ```count``` vs ```number```
 >
-> 表达长度时，一会用 ```size```，一会用 ```length```。
+> ```size``` vs ```length```
 >
-> 表达计算时，一会用 ```compute```，一会用 ```calculate```。
+> ```compute``` vs ```calculate```
 >
-> 一会用 ```center```，一会用 ```centre```。
+> ```center``` vs ```centre```
 >
 > **案例 3：命名不对称**
 >
 > ```c++
+> // 反例
 > void set_attribute(const std::string& attribute) {
->   // 应该 set `attribute_`，实际 set `biz_attribute_`。
+>   // set `attribute_`，实际 set `biz_attribute_`。
 >   biz_attribute_ = attribute;
 > }
 > ```
 >
 > ```c++
+> // 反例
 > // begin vs end
 > // start vs stop
 > auto start = std::chrono::steady_clock::now();
@@ -268,6 +373,7 @@ XCode
 > ```
 >
 > ```python
+> # 反例
 > # 没错，你不是一个人，Python 标准库也不一致。
 > # begin vs end
 > # start vs stop
@@ -276,50 +382,57 @@ XCode
 > ```
 >
 > ```c++
+> // 反例
 > // in vs out
 > // input vs output
 > void Foo(const std::string& in, std::string* output);
 > ```
 >
 > ```c++
+> // 反例
 > struct BenchmarkStat {
 >   // succeed vs fail
 >   // success vs failure
->   double success = 0;
->   double fail = 0;
->   // ...
+>   double success;
+>   double fail;
 > };
 > ```
 >
-> **未完待续**
+> ```c++
+> // 反例
+> struct Calendar {
+>   // hour 是单数，minutes 是复数，seconds 是复数。
+>   int hour;
+>   int minutes;
+>   int seconds;
+> };
+> ```
 
 ## 【可读性】缩写
 
 **最佳实践：**
 
 - **不使用奇怪的缩写。**
+- **不缩写短单词。**
 - **使用约定俗成的缩写。**
-- **尽量不缩写短单词。**
 - **当前上下文中不会引起歧义的缩写，是好缩写。**
-- **考虑在某范围内创造缩写，但请三思如何缩写，因为它们将影响深远。**
+- **考虑创造缩写，但请三思，它们将影响深远。**
 
 坏的缩写：
 
+<!-- markdownlint-disable -->
 ```
 thread -> thd
 client -> clt
 label -> lab
-```
-
-不太好的缩写：
-
-```
 count -> cnt
 manager -> mgr
 ```
+<!-- markdownlint-restore -->
 
 好的缩写：
 
+<!-- markdownlint-disable -->
 ```
 advertisement -> ad
 document -> doc
@@ -328,8 +441,9 @@ initialize -> init
 personalization -> p13n
 reference -> ref
 ```
+<!-- markdownlint-restore -->
 
-下面代码片段的 ```var``` 和 ```stddev``` 不会有人误解：
+下面的 ```var``` 和 ```stddev``` 不会被误解：
 
 ```c++
 double mean = 0.0;
@@ -338,29 +452,69 @@ double var = 0.0;
 double stddev = sqrt(var);
 ```
 
-下面代码片段的 ```K``` 和 ```V``` 不会有人误解：
+下面的 ```K``` 和 ```V``` 不会被误解：
 
 ```c++
 template <typename K, typename V>
 class Map;
 ```
 
+## 【可读性】时间命名案例
+
+> **案例 1**
+>
+> ```c++
+> template <typename Rep, typename Period>
+> void Sleep(const std::chrono::duration<Rep, Period>& duration);
+>
+> Sleep(std::chrono::seconds(1));
+> Sleep(std::chrono::microseconds(1));
+> ```
+>
+> **案例 2**
+>
+> ```c++
+> void Sleep(int milliseconds);
+>
+> int sleep_milliseconds = 1000;
+> Sleep(sleep_milliseconds);
+> ```
+>
+> **案例 3**
+>
+> ```c++
+> template <typename Clock, typename Duration>
+> std::string GetYYYYMMDD(const std::chrono::time_point<Clock, Duration> point);
+> template <typename Clock, typename Duration>
+> std::string GetHHMMSS(const std::chrono::time_point<Clock, Duration> point);
+>
+> auto now = std::chrono::steady_clock::now();
+> auto now_YYYYMMDD = GetYYYYMMDD(now);
+> auto now_HHMMSS = GetHHMMSS(now);
+> ```
+
+**最佳实践：**
+
+- **用时间库完成时间操作。**
+- **如果用整数表示时间，命名要体现出“单位”。**
+- **如果用字符串表示时间，命名要体现出“格式”。**
+
 ## 【可读性】日志案例 1
 
-关于日志，我遇到的一个典型问题是：失败后的错误日志揣测失败原因。
-
-v1 打开文件失败时，打印错误日志“文件不存在”：
-
 ```c++
-// v1
+// 反例
 const char* file = ...;
 int fd = open(file, ...);
 if (fd == -1) {
-  CARBON_ERROR("%s does not exist.", file);
+  CARBON_ERROR("\"%s\" does not exist.", file);
 }
 ```
 
-事实上，打开文件失败的原因有很多，常见的有：
+问题：
+
+- 打开文件失败后，打印错误日志“文件不存在”。
+
+实际上，打开文件失败的原因有很多，常见的有：
 
 1. 文件不存在。
 2. ```file``` 是一个目录。
@@ -368,10 +522,9 @@ if (fd == -1) {
 4. 没有写权限（写模式）。
 5. 打开了过多文件，即打开文件数超过 ```ulimit -n```。
 
-v2 是更好的做法：
+可以这样改进：
 
 ```c++
-// v2
 const char* file = ...;
 int fd = open(file, ...);
 if (fd == -1) {
@@ -382,55 +535,186 @@ if (fd == -1) {
 
 **最佳实践：**
 
-- **失败后的错误日志应该打印失败事件本身，不揣测失败原因。**
-- **如果有更多上下文，请打印出来。**
+- **失败后的错误日志打印失败事件本身，不揣测失败原因。**
 
-## 【可读性】函数设计案例 1
+## 【可读性】日志案例 2
 
-某基础库要添加一个“开启/关闭 metrics 采集”的功能，考虑函数设计。
+<!-- markdownlint-disable -->
+```
+// 反例
+"key {} redis data is empty"
+```
+<!-- markdownlint-restore -->
 
-v1 和 v2，```Set``` 和 ```Enable``` 都是动词，“动名动”、“动动名”的词性不适合做函数名。
-```enable``` 是动词，不适合做函数参数名。
+问题：
+
+- ```key {}``` 和 ```redis data``` 是修饰关系。
+- ```key``` 没有信息量。
+- ```data``` 太宽泛，这里指 ```{}``` 对应的 value。
+- 首字母没有大写。
+- 没有句号。
+
+可以这样改进：
+
+<!-- markdownlint-disable -->
+```
+"Redis value of {} is empty."
+"Value of {} is empty in Redis."
+```
+<!-- markdownlint-restore -->
+
+## 【可读性】日志案例 3
+
+<!-- markdownlint-disable -->
+```
+// 反例
+"Embedding size not match %zu vs. %zu."
+```
+<!-- markdownlint-restore -->
+
+问题：
+
+- 没有谓语。
+- ```match``` 略宽泛，这里指 embedding size 不相等。
+- ```%zu vs. %zu``` 是对前面的解释，并不是前面那句话的主谓宾，可以用冒号。
+- ```versus```、```vs.```、```vs``` 都是正确的写法，```vs``` 更流行。
+
+可以这样改进：
+
+<!-- markdownlint-disable -->
+```
+Embedding size is inconsistent: %zu vs %zu.
+```
+<!-- markdownlint-restore -->
+
+## 【可读性】函数注释案例 1
 
 ```c++
-// v1
-void SetMetricsEnable(bool enable);
+// 反例
+// 有异常时调用。
+void ReportException();
 ```
 
+问题：
+
+- 没有函数说明，不能只说明调用时机。
+
+## 【可读性】函数注释案例 2
+
+```java
+// 反例
+// 计算当前日期向上取上边界，比如 12:53，则返回 12:50。
+public static Calendar getCalendarByFloor(Calendar calendar)
+```
+
+问题：
+
+- 函数说明和例子不一致。
+- 没有说明取整的边界是什么，不能只用例子体现取整的边界。
+
+## 【可读性】函数注释案例 3
+
+```java
+// 反例
+// 获取当前日期 格式为20220616
+public static String getCurrentDt(Calendar calendar)
+```
+
+问题：
+
+- 不是 ```获取当前日期``` ，而是获取 ```calendar``` 的日期。
+- ```20220616``` 不是格式，而是返回值的例子。
+- ```获取当前日期``` 和 ```格式为20220616``` 之间没有标点符号，没有句号。
+- ```格式为``` 和 ```20220616``` 之间没有空格。
+
+可以这样改进：
+
+```java
+// 将 calendar 转换为 YYYYMMDD 格式的字符串。
+public static String getYYYYMMDD(Calendar calendar)
+```
+
+## 【可读性】函数命名案例 1
+
 ```c++
-// v2
+// 反例
+// 开启/关闭 metrics 采集。
+void SetMetricsEnable(bool enable);
 void SetEnableMetrics(bool enable);
 ```
 
-v1 改进，不太好。
-```SetMetricsEnabled``` 更像一个 setter 函数。
+问题：
+
+- ```Set``` 和 ```Enable``` 都是动词，“动名动”、“动动名”的词性组合不适合做函数名。
+- ```enable``` 是动词，不适合做参数名。
+
+改进一版：
 
 ```c++
-// v1 改进
+// 反例
+// 开启/关闭 metrics 采集。
 void SetMetricsEnabled(bool enabled);
 ```
 
-v3，```enbaled``` 为 ```false``` 时，是开启还是关闭？
+问题：
+
+- ```SetMetricsEnabled``` 像 setter 函数。
+
+又改进一版：
 
 ```c++
-// v3
+// 反例
+// 开启/关闭 metrics 采集。
 void EnableMetrics(bool enabled);
 ```
 
-v4 和 v5 都是好的函数声明。
+问题：
+
+- ```enabled``` 为 ```false``` 时，是开启还是关闭？
+
+最终版：
 
 ```c++
-// v4
+// 开启 metrics 采集。
 void EnableMetrics();
+// 关闭 metrics 采集。
 void DisableMetrics();
-```
-
-```c++
-// v5
+// 开启/关闭 metrics 采集。
 void ToggleMetrics(bool enabled);
 ```
 
-## 【扩展性 & 可读性】函数设计案例 2
+## 【可读性】函数命名案例 2
+
+```java
+// 反例
+// 获取 `calendar` 当天的 23:50。
+public static Calendar getCalendarByTwentyThreeFifty(Calendar calendar)
+// 获取 `calendar` 第二天的 00:00。
+public static Calendar getCalendarByEarlyMorning(Calendar calendar)
+```
+
+问题：
+
+- 函数命名过长。
+- 函数命名包含介词。
+- ```TwentyThreeFifty``` 可读性差。
+- ```EarlyMorning``` 是清晨，不是凌晨零点，也没有表达出第二天的意思。
+
+可以这样改进：
+
+```java
+// 获取 `calendar` 当天的 23:50。
+public static Calendar getCalendarThis2350(Calendar calendar)
+// 获取 `calendar` 第二天的 00:00。
+public static Calendar getCalendarNext0000(Calendar calendar)
+```
+
+**最佳实践：**
+
+- **函数名不超过 4 个单词。**
+- **函数名不包含介词、副词、带有主观感情的单词。**
+
+## 【扩展性 & 可读性】函数设计案例 1
 
 ```Foo``` 处理 ```in```，返回处理后的结果。
 如果 ```compressed``` 为 ```true```，```in``` 是用 Snappy 压缩的。
@@ -465,9 +749,9 @@ out = Bar(in, COMPRESSION_TYPE_LZ4);
 
 **最佳实践：**
 
-- **设计函数时，考虑用 ```int/enum``` 取代 ```bool``` 做参数，它们有更好的扩展性和可读性。**
+- **考虑用 ```int``` 或 ```enum``` 取代 ```bool``` 做参数，它们有更好的扩展性和可读性。**
 
-## 【扩展性 & 可读性】函数设计案例 3
+## 【扩展性 & 可读性】函数设计案例 2
 
 ```Init``` 根据若干参数初始化某模块。
 
@@ -565,7 +849,7 @@ bool ok = Init(options);
 
 **最佳实践：**
 
-- **设计函数时，尽量避免过多参数，考虑用特殊方式处理大量参数的传递。**
+- **避免过多参数，考虑用特殊方式处理大量参数的传递。**
 
 ## 【扩展性 & 可读性】分支优化案例 1
 
