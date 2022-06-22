@@ -188,8 +188,7 @@ Doc work（文档、issue、代码注释等）要特别注意专有名词。
 
 一些专有名词的官方写法：
 
-<!-- markdownlint-disable -->
-```
+```plain
 CentOS
 deepx
 GitHub
@@ -204,12 +203,10 @@ TensorFlow
 Visual Studio Code
 Xcode
 ```
-<!-- markdownlint-restore -->
 
 以上专有名词的错误写法：
 
-<!-- markdownlint-disable -->
-```
+```plain
 centos
 DeepX
 github
@@ -231,7 +228,6 @@ visual studio code
 xcode
 XCode
 ```
-<!-- markdownlint-restore -->
 
 ## 【通用】将循环体内的“不变量”移到循环体外
 
@@ -420,20 +416,18 @@ return x[0:n];
 
 坏的缩写：
 
-<!-- markdownlint-disable -->
-```
+
+```plain
 thread -> thd
 client -> clt
 label -> lab
 count -> cnt
 manager -> mgr
 ```
-<!-- markdownlint-restore -->
 
 好的缩写：
 
-<!-- markdownlint-disable -->
-```
+```plain
 advertisement -> ad
 document -> doc
 implement -> impl
@@ -441,7 +435,6 @@ initialize -> init
 personalization -> p13n
 reference -> ref
 ```
-<!-- markdownlint-restore -->
 
 下面的 ```var``` 和 ```stddev``` 不会被误解：
 
@@ -539,12 +532,10 @@ if (fd == -1) {
 
 ## 【可读性】日志案例 2
 
-<!-- markdownlint-disable -->
-```
+```plain
 // 反例
 "key {} redis data is empty"
 ```
-<!-- markdownlint-restore -->
 
 问题：
 
@@ -556,21 +547,17 @@ if (fd == -1) {
 
 可以这样改进：
 
-<!-- markdownlint-disable -->
-```
+```plain
 "Redis value of {} is empty."
 "Value of {} is empty in Redis."
 ```
-<!-- markdownlint-restore -->
 
 ## 【可读性】日志案例 3
 
-<!-- markdownlint-disable -->
-```
+```plain
 // 反例
 "Embedding size not match %zu vs. %zu."
 ```
-<!-- markdownlint-restore -->
 
 问题：
 
@@ -581,11 +568,9 @@ if (fd == -1) {
 
 可以这样改进：
 
-<!-- markdownlint-disable -->
-```
+```plain
 Embedding size is inconsistent: %zu vs %zu.
 ```
-<!-- markdownlint-restore -->
 
 ## 【可读性】函数注释案例 1
 
