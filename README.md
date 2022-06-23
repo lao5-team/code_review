@@ -282,14 +282,14 @@ return y;
 // 伪码
 // Fisher-Yates 洗牌算法。
 int m = x.size();
+if (m > n) {
+  m = n;
+}
 for (int i = 0; i < m - 1; ++i) {
   int j = random_uniform_int(i, m - 1);
   if (i != j) {
     交换 x[i] 和 x[j];
   }
-}
-if (n > m) {
-  n = m;
 }
 return x[0:n];
 ```
