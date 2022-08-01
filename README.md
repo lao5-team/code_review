@@ -21,6 +21,7 @@
   - [【通用】专有名词](#通用专有名词)
   - [【通用】将循环体内的“不变量”移到循环体外](#通用将循环体内的不变量移到循环体外)
   - [【通用】重复代码片段](#通用重复代码片段)
+  - [【通用】文件末尾换行](#通用文件末尾换行)
   - [【算法】随机算法案例 1](#算法随机算法案例-1)
   - [【一致性】不一致案例](#一致性不一致案例)
   - [【可读性】缩写](#可读性缩写)
@@ -239,6 +240,18 @@ XCode
 
 考虑用代码生成大致雷同的代码。
 
+## 【通用】文件末尾换行
+
+在 code review 时，经常可以看到类似下图的“No newline at end of file”。
+
+<!-- markdownlint-disable -->
+<img src="pic/no_newline.png" height="200px">
+<!-- markdownlint-restore -->
+
+对于所有文本文件，在末尾添加且仅添加一个换行。
+
+[Why should text files end with a newline?](https://stackoverflow.com/questions/729692/why-should-text-files-end-with-a-newline)
+
 ## 【算法】随机算法案例 1
 
 随机从数组 x 中选出 n 个数字，选出数字的顺序不同算不同的结果。
@@ -415,7 +428,6 @@ return x[0:n];
 - **考虑创造缩写，但请三思，它们将影响深远。**
 
 坏的缩写：
-
 
 ```plain
 thread -> thd
