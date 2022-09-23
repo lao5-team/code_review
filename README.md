@@ -115,11 +115,11 @@
 >
 > 某项目的开发模式是“创建分支 - 在分支开发 - 合并到 master”。
 >
-> 该项目成员从不 rebase master，开发完成后用 “merge” 的方式合并到 master。
+> 该项目成员从不 rebase master，开发完成后用“merge”的方式合并到 master。
 
 问题：
 
-- 案例 1：commit history 中存在大量连续的“update” commit。
+- 案例 1：commit history 中存在大量连续的“update”commit。
 - 案例 2：commit history 中存在大量连续的有相同 message 的 commit。
 - 案例 3：commit history 中存在大量分叉和 merge commit。
 
@@ -176,7 +176,7 @@
 
 ## 【通用】TODO 注释
 
-“对那些临时的, 短期的解决方案, 或已经够好但仍不完美的代码使用 TODO 注释. ”
+“对那些临时的，短期的解决方案，或已经够好但仍不完美的代码使用 TODO 注释。”
 
 每个 TODO 注释都是一个“坑”。我们允许“坑”的存在，但不允许“暗坑”的存在。
 
@@ -625,11 +625,13 @@ public static Calendar getCalendarByFloor(Calendar calendar)
 
 ## 【可读性】函数注释案例 3
 
+<!-- autocorrect-disable -->
 ```java
 // 反例
 // 获取当前日期 格式为20220616
 public static String getCurrentDt(Calendar calendar)
 ```
+<!-- autocorrect-enable -->
 
 问题：
 
