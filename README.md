@@ -36,9 +36,9 @@
   - [【通用】将循环体内的“不变量”移到循环体外](#通用将循环体内的不变量移到循环体外)
   - [【通用】重复代码片段](#通用重复代码片段)
   - [【通用】文件末尾换行](#通用文件末尾换行)
-  - [【通用】端口](#通用端口)
-  - [【通用】获取私有 IPv4 地址](#通用获取私有-ipv4-地址)
-  - [【算法】随机算法案例 1](#算法随机算法案例-1)
+  - [【通用】端口案例](#通用端口案例)
+  - [【通用】获取私有 IPv4 地址案例](#通用获取私有-ipv4-地址案例)
+  - [【算法】随机算法案例](#算法随机算法案例)
   - [【一致性】不一致案例](#一致性不一致案例)
   - [【可读性】缩写](#可读性缩写)
   - [【可读性】时间命名案例](#可读性时间命名案例)
@@ -129,7 +129,7 @@
 
 - **请培养意识：commit history 和代码同等重要，commit history 也是给人看的，commit history 有时候还需要回溯。**
 - **请用高标准、严要求写 commit message。**
-- **请维护好 commit tree。**
+- **请维护好 commit tree：**
   - **保持 commit tree 是线性的。**
   - **用“rebase and merge”或“squash and merge”合并分支。**
 
@@ -203,7 +203,7 @@ Doc work（文档、issue、代码注释等）要特别注意专有名词。
 - **专有名词没有统一写法的，请在 doc work 中使用更流行的写法。**
 - **以上只针对 doc work。**
 
-一些专有名词的正确和错误写法：
+一些专有名词正确和错误的写法：
 
 | 正确 | 错误 |
 | :- | :- |
@@ -243,12 +243,12 @@ Doc work（文档、issue、代码注释等）要特别注意专有名词。
 
 [Why should text files end with a newline?](https://stackoverflow.com/questions/729692/why-should-text-files-end-with-a-newline)
 
-## 【通用】端口
+## 【通用】端口案例
 
 某服务启动时，这样暴露”端口“参数：
 
 ```c++
-// 反例
+// 反例：
 class ServerConfig {
  public:
   // ...
@@ -271,12 +271,12 @@ class ServerConfig {
 - **监听地址要给出协议、地址、端口三要素。**
   - **当上下文只有一种协议时，可以省略协议。**
 
-## 【通用】获取私有 IPv4 地址
+## 【通用】获取私有 IPv4 地址案例
 
 某服务的启动脚本这样获取自己的 IPv4 地址：
 
 ```shell
-# 反例
+# 反例：
 ifconfig -a |
     grep inet |
     grep -i cast |
@@ -307,13 +307,13 @@ ifconfig |
 
 **最佳实践：**
 
-- 对于复杂的输入格式，给出注释。
-- 对于复杂的管道命令，注释出每个管道命令的用途。
-- 用更强大的工具减少管道数：
-  - `awk`
-  - `sed`
+- **注释复杂输入的格式。**
+- **注释复杂管道命令的用途。**
+- **用更强大的工具减少管道数：**
+  - **`awk`**
+  - **`sed`**
 
-## 【算法】随机算法案例 1
+## 【算法】随机算法案例
 
 随机从数组 x 中选出 n 个数字，选出数字的顺序不同算不同的结果。
 
@@ -323,7 +323,7 @@ ifconfig |
 - 当 $m \le n$ 时，有 $m!$ 种结果，每种结果的概率是 $\frac{1}{m!}$。
 
 ```c++
-// 反例
+// 反例：
 // 伪码
 定义数组 y;
 if (x.empty()) {
@@ -391,8 +391,8 @@ return x[0:n];
 
 **最佳实践：**
 
-- **理论分析：保证理论分布符合预期。**
-- **测试：保证统计分布和理论分布近似。**
+- **理论分析，保证理论分布符合预期。**
+- **测试，保证统计分布和理论分布近似。**
 - **简单、高效。**
 - **无状态、可重入、无锁。**
 
@@ -425,7 +425,7 @@ return x[0:n];
 > **案例 3：命名不对称**
 >
 > ```c++
-> // 反例
+> // 反例：
 > void set_attribute(const std::string& attribute) {
 >   // set `attribute_`，实际 set `biz_attribute_`。
 >   biz_attribute_ = attribute;
@@ -433,7 +433,7 @@ return x[0:n];
 > ```
 >
 > ```c++
-> // 反例
+> // 反例：
 > // begin vs end
 > // start vs stop
 > auto start = std::chrono::steady_clock::now();
@@ -443,7 +443,7 @@ return x[0:n];
 > ```
 >
 > ```python
-> # 反例
+> # 反例：
 > # 没错，你不是一个人，Python 标准库也不一致。
 > # begin vs end
 > # start vs stop
@@ -452,14 +452,14 @@ return x[0:n];
 > ```
 >
 > ```c++
-> // 反例
+> // 反例：
 > // in vs out
 > // input vs output
 > void Foo(const std::string& in, std::string* output);
 > ```
 >
 > ```c++
-> // 反例
+> // 反例：
 > struct BenchmarkStat {
 >   // succeed vs fail
 >   // success vs failure
@@ -469,7 +469,7 @@ return x[0:n];
 > ```
 >
 > ```c++
-> // 反例
+> // 反例：
 > struct Calendar {
 >   // hour 是单数，minutes 是复数，seconds 是复数。
 >   int hour;
@@ -568,7 +568,7 @@ class Map;
 ## 【可读性】日志案例 1
 
 ```c++
-// 反例
+// 反例：
 const char* file = ...;
 int fd = open(file, ...);
 if (fd == -1) {
@@ -606,7 +606,7 @@ if (fd == -1) {
 ## 【可读性】日志案例 2
 
 ```plain
-// 反例
+// 反例：
 "key {} redis data is empty"
 ```
 
@@ -628,7 +628,7 @@ if (fd == -1) {
 ## 【可读性】日志案例 3
 
 ```plain
-// 反例
+// 反例：
 "Embedding size not match %zu vs. %zu."
 ```
 
@@ -648,7 +648,7 @@ Embedding size is inconsistent: %zu vs %zu.
 ## 【可读性】函数注释案例 1
 
 ```c++
-// 反例
+// 反例：
 // 有异常时调用。
 void ReportException();
 ```
@@ -660,7 +660,7 @@ void ReportException();
 ## 【可读性】函数注释案例 2
 
 ```java
-// 反例
+// 反例：
 // 计算当前日期向上取上边界，比如 12:53，则返回 12:50。
 public static Calendar getCalendarByFloor(Calendar calendar)
 ```
@@ -674,7 +674,7 @@ public static Calendar getCalendarByFloor(Calendar calendar)
 
 <!-- autocorrect-disable -->
 ```java
-// 反例
+// 反例：
 // 获取当前日期 格式为20220616
 public static String getCurrentDt(Calendar calendar)
 ```
@@ -697,7 +697,7 @@ public static String getYYYYMMDD(Calendar calendar)
 ## 【可读性】函数命名案例 1
 
 ```c++
-// 反例
+// 反例：
 // 开启/关闭 metrics 采集。
 void SetMetricsEnable(bool enable);
 void SetEnableMetrics(bool enable);
@@ -711,7 +711,7 @@ void SetEnableMetrics(bool enable);
 改进一版：
 
 ```c++
-// 反例
+// 反例：
 // 开启/关闭 metrics 采集。
 void SetMetricsEnabled(bool enabled);
 ```
@@ -723,7 +723,7 @@ void SetMetricsEnabled(bool enabled);
 又改进一版：
 
 ```c++
-// 反例
+// 反例：
 // 开启/关闭 metrics 采集。
 void EnableMetrics(bool enabled);
 ```
@@ -746,7 +746,7 @@ void ToggleMetrics(bool enabled);
 ## 【可读性】函数命名案例 2
 
 ```java
-// 反例
+// 反例：
 // 获取 `calendar` 当天的 23:50。
 public static Calendar getCalendarByTwentyThreeFifty(Calendar calendar)
 // 获取 `calendar` 第二天的 00:00。
@@ -816,7 +816,7 @@ out = Bar(in, COMPRESSION_TYPE_LZ4);
 ```Init``` 根据若干参数初始化某模块。
 
 ```c++
-// v1
+// v1：
 bool Init(const std::string& model_dir,
           int session_pool_max_size = 96,
           int intra_op_parallelism_threads = 1,
@@ -830,7 +830,7 @@ bool Init(const std::string& model_dir,
 如此迭代下去，该模块还将引入多少参数呢？
 
 ```c++
-// v2
+// v2：
 bool Init(const std::string& model_dir,
           int session_pool_max_size = 96,
           int intra_op_parallelism_threads = 1,
@@ -844,7 +844,7 @@ bool Init(const std::string& model_dir,
 第二版可以这样改进：通过 string map 传递所有参数，彻底解决参数扩展性问题。
 
 ```c++
-// v2 改进
+// v2 改进：
 template <typename T>
 bool GetOption(const std::unordered_map<std::string, std::string>& options,
                const std::string& name, T* option);
@@ -884,17 +884,17 @@ bool Init(const std::unordered_map<std::string, std::string>& options) {
 我们再看看 ```Init``` 的调用代码，可读性一目了然：
 
 ```c++
-// v1
+// v1：
 bool ok = Init("mandatory_model_dir", 96, 1, -1, true, true);
 ```
 
 ```c++
-// v2
+// v2：
 bool ok = Init("mandatory_model_dir", 96, 1, -1, true, true, false, true);
 ```
 
 ```c++
-// v2 改进
+// v2 改进：
 std::unordered_map<std::string, std::string> options;
 options["model_dir"] = "mandatory_model_dir";
 options["session_pool_max_size"] = "96";
@@ -925,7 +925,7 @@ v1 可读性稍差，但逻辑清晰，可以接受。
 如果需求变成“用 3 个开关控制 8 盏灯”或者更多，还套用 v1 的代码结构，可读性将非常差，也容易出错。
 
 ```java
-// v1
+// v1：
 if (switch2.close) {
   if (switch1.close) {
     turnOn(light1);
@@ -944,7 +944,7 @@ if (switch2.close) {
 用”查表“的思想优化 v1，得到 v2。
 
 ``` java
-// v2
+// v2：
 Light[] lights = new Ligth[]{light1, light2, light3, light4};
 int index = (switch2.close ? 0 : 2) + (switch1.close ? 0 : 1);
 turnOn(lights[index]);
@@ -953,7 +953,7 @@ turnOn(lights[index]);
 v2 可以扩展到“用 3 个开关控制 8 盏灯”的需求。
 
 ``` java
-// v2 扩展
+// v2 扩展：
 Light[] lights = new Ligth[]{light1, light2, light3, light4, light5, light6, light7, light8};
 int index = (switch3.close ? 0 : 4) + (switch2.close ? 0 : 2) + (switch1.close ? 0 : 1);
 turnOn(lights[index]);
