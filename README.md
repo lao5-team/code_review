@@ -201,48 +201,23 @@ Doc work（文档、issue、代码注释等）要特别注意专有名词。
 - **专有名词没有统一写法的，请在 doc work 中使用更流行的写法。**
 - **以上只针对 doc work。**
 
-一些专有名词的官方写法：
+一些专有名词的正确和错误写法：
 
-```plain
-CentOS
-deepx
-GitHub
-GitLab
-HDFS
-iOS
-LZ4
-macOS
-Redis
-Snappy
-TensorFlow
-Visual Studio Code
-Xcode
-```
-
-以上专有名词的错误写法：
-
-```plain
-centos
-DeepX
-github
-Github
-gitlab
-Gitlab
-hdfs
-Hdfs
-ios
-lz4
-Lz4
-macos
-MacOS
-redis
-snappy
-tensorflow
-Tensorflow
-visual studio code
-xcode
-XCode
-```
+| 正确 | 错误 |
+| :- | :- |
+| CentOS | centos |
+| deepx | DeepX |
+| GitHub | github、Github |
+| GitLab | gitlab、Gitlab |
+| HDFS | hdfs、Hdfs |
+| iOS | ios |
+| LZ4 | lz4、Lz4 |
+| macOS | macos、MacOS |
+| Redis | redis |
+| Snappy | snappy |
+| TensorFlow | tensorflow、Tensorflow |
+| Visual Studio Code | visual studio code |
+| Xcode | xcode、XCode |
 
 ## 【通用】将循环体内的“不变量”移到循环体外
 
